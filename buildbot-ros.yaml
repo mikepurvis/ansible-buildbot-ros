@@ -1,0 +1,47 @@
+- name: prepare for buildbot
+  hosts: [ master, slaves ]
+  sudo: yes
+  tags: [ master, slave ]
+  vars_files: "vars.yaml"
+  tasks:
+    - name: install packages
+      apt: name=${item} state=latest
+      with_items:
+        - python-virtualenv
+        - python-pip
+        - git
+    - name: create buildbot user
+      user: home=${buildbot_home} name=buildbot state=present system=yes
+
+- name: prepare for buildbot slave
+  hosts: slaves
+  sudo: yes
+  tags: slave
+  vars_files: "vars.yaml"
+  tasks:
+    - name: install packages
+      apt: name=${item} state=latest
+      with_items:
+        - reprepro
+        - cowbuilder
+        - debootstrap
+        - devscripts
+        - git-buildpackage
+        - debhelper
+
+- name: buildbot master setup
+  hosts: master
+  tags: master
+  vars_files: "vars.yaml"
+  sudo: yes
+  sudo_user: buildbot
+  tasks:
+    - name: install python packages
+      pip: name=${item} virtualenv=~/buildbot-env
+      with_items:
+        - rosdistro
+        - buildbot
+    - name: clone buildbot-ros repo
+      git: repo=${buildbot_ros_repo} dest=~/buildbot-ros
+    - name: create buildbot master
+      shell: source ~/buildbot-env/bin/activate && buildbot create-master ~/buildbot-ros creates=~/buildbot-ros/buildbot.tac executable=/bin/bash

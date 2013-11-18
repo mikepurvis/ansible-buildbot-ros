@@ -1,0 +1,4 @@
+---
+buildbot_home: /opt/buildbot
+buildbot_ros_repo: https://github.com/mikeferguson/buildbot-ros.git
+rosdistro_index: https://raw.github.com/mikeferguson/rosdistro-buildbot-example/with-apache/index.yaml

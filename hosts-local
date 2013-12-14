@@ -1,0 +1,5 @@
+[master]
+localhost ansible_connection=local
+
+[slaves]
+localhost ansible_connection=local

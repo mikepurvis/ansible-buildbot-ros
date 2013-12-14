@@ -1,4 +1,7 @@
----
-buildbot_home: /opt/buildbot
+home: /opt/buildbot
+venv: /opt/buildbot/venv
+org: Clearpath
+arches: [ amd64, i386 ]
+dists: [ precise, raring ]
 buildbot_ros_repo: https://github.com/mikeferguson/buildbot-ros.git
 rosdistro_index: https://raw.github.com/mikeferguson/rosdistro-buildbot-example/with-apache/index.yaml

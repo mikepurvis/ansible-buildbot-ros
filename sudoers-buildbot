@@ -1,0 +1,1 @@
+buildbot  ALL= NOPASSWD: SETENV: /usr/bin/git-*, /usr/sbin/*builder

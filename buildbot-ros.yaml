@@ -1,26 +1,21 @@
 - name: prepare for buildbot
   hosts: [ master, slaves ]
   sudo: yes
-  tags: [ master, slave ]
-  vars_files: "vars.yaml"
   tasks:
-    - name: install packages
-      apt: name=${item} state=latest
+    - user: home={{ home }} name=buildbot state=present system=yes
+    - apt: name={{ item }} state=latest
       with_items:
-        - python-virtualenv
+        - python-dev
         - python-pip
+        - python-virtualenv
         - git
-    - name: create buildbot user
-      user: home=${buildbot_home} name=buildbot state=present system=yes
 
-- name: prepare for buildbot slave
+- name: extra preparation for buildbot slave
   hosts: slaves
   sudo: yes
-  tags: slave
-  vars_files: "vars.yaml"
   tasks:
-    - name: install packages
-      apt: name=${item} state=latest
+    - copy: src=sudoers-buildbot dest=/etc/sudoers.d owner=0
+    - apt: name={{ item }} state=latest
       with_items:
         - reprepro
         - cowbuilder
@@ -29,19 +24,41 @@
         - git-buildpackage
         - debhelper
 
-- name: buildbot master setup
-  hosts: master
-  tags: master
-  vars_files: "vars.yaml"
+- name: buildbot slave setup
+  hosts: slaves
   sudo: yes
   sudo_user: buildbot
   tasks:
-    - name: install python packages
-      pip: name=${item} virtualenv=~/buildbot-env
+    - pip: name={{ item }} virtualenv={{ venv }}
+      with_items:
+        - buildbot-slave
+    - template: src=virtualenv_exec.j2 dest={{ venv }}/exec mode=755
+    - command: "{{ venv }}/exec buildslave create-slave {{ home }}/{{ item }} {{ groups['master'][0] }}:9989
+                {{ item }} mebuildslotsaros"
+      with_items:
+        - rosbuilder1
+        - rosbuilder2
+    - command: "{{ venv }}/exec buildslave start {{ home }}/{{ item }}"
+      with_items:
+        - rosbuilder1
+        - rosbuilder2
+
+- name: buildbot master setup
+  hosts: master
+  sudo: yes
+  sudo_user: buildbot
+  tasks:
+    - pip: name={{ item }} virtualenv={{ venv }}
       with_items:
         - rosdistro
         - buildbot
-    - name: clone buildbot-ros repo
-      git: repo=${buildbot_ros_repo} dest=~/buildbot-ros
-    - name: create buildbot master
-      shell: source ~/buildbot-env/bin/activate && buildbot create-master ~/buildbot-ros creates=~/buildbot-ros/buildbot.tac executable=/bin/bash
+    - template: src=virtualenv_exec.j2 dest={{ venv }}/exec mode=755
+    - git: repo={{ buildbot_ros_repo }} dest=~/buildbot-ros
+    - command: "{{ venv }}/exec buildbot create-master {{ home }}/buildbot-ros
+                 creates={{ home }}/buildbot-ros/buildbot.tac"
+    - lineinfile: dest={{ home }}/buildbot-ros/buildbot.tac regexp=^umask line="umask = 0023"
+    - file: name={{ home }}/building state=directory mode=755
+    - file: name={{ home }}/building/conf state=directory
+    - template: src=distributions.j2 dest={{ home }}/building/conf/distributions
+    - command: "{{ venv }}/exec buildbot start {{ home }}/buildbot-ros"
+

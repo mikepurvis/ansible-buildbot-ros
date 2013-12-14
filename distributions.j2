@@ -1,0 +1,9 @@
+{% for dist in dists %}
+Origin: {{ org }}
+Label: {{ org }} {{ dist }}
+Codename: {{ dist }}
+Architectures: {{ ' '.join(arches) }}
+Components: main
+Description: {{ org }} Debian Repository
+
+{% endfor %}

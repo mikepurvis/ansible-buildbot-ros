@@ -2,10 +2,10 @@
 
 # This script will add a deb to the 'building' APT repository, using reprepro
 
-export REPO_DIR="/var/www/building/ubuntu"
-export BUILD_DIR="/home/buildbot/buildbot-ros"
+export REPO_DIR="{{ building_repo }}/ubuntu"
+export MASTER_DIR="{{ master_dir }}"
 
-if [[ ${#} -lt 4 ]]; then
+if [[ $# -lt 4 ]]; then
     echo "Usage: ${0} <pkg_name> <name.deb> <distro> <arch>"
     exit -1
 fi
@@ -22,4 +22,4 @@ reprepro -V -b $REPO_DIR removefilter $DISTRO "Package (==$PKG), Architecture (=
 
 reprepro -V -b $REPO_DIR deleteunreferenced
 
-reprepro -V -b $REPO_DIR includedeb $DISTRO $BUILD_DIR/binarydebs/$NAME
+reprepro -V -b $REPO_DIR includedeb $DISTRO $MASTER_DIR/binarydebs/$NAME

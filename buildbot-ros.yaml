@@ -14,7 +14,7 @@
   hosts: slaves
   sudo: yes
   tasks:
-    - copy: src=sudoers-buildbot dest=/etc/sudoers.d owner=0
+    - copy: src=sudoers-buildbot dest=/etc/sudoers.d owner=0 group=0 mode=0440
     - apt: name={{ item }} state=latest
       with_items:
         - reprepro
@@ -39,6 +39,7 @@
         - rosbuilder1
         - rosbuilder2
     - command: "{{ venv }}/exec buildslave start {{ home }}/{{ item }}"
+      ignore_errors: true
       with_items:
         - rosbuilder1
         - rosbuilder2
@@ -57,8 +58,9 @@
     - command: "{{ venv }}/exec buildbot create-master {{ home }}/buildbot-ros
                  creates={{ home }}/buildbot-ros/buildbot.tac"
     - lineinfile: dest={{ home }}/buildbot-ros/buildbot.tac regexp=^umask line="umask = 0023"
-    - file: name={{ home }}/building state=directory mode=755
-    - file: name={{ home }}/building/conf state=directory
-    - template: src=distributions.j2 dest={{ home }}/building/conf/distributions
+    - file: name={{ building_repo }} state=directory mode=755
+    - file: name={{ building_repo }}/ubuntu/conf state=directory
+    - template: src=distributions.j2 dest={{ home }}/building/ubuntu/conf/distributions
     - command: "{{ venv }}/exec buildbot start {{ home }}/buildbot-ros"
+      ignore_errors: true
 

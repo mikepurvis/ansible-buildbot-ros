@@ -1,5 +1,6 @@
 home: /opt/buildbot
 venv: /opt/buildbot/venv
+building_repo: /opt/buildbot/building
 org: Clearpath
 arches: [ amd64, i386 ]
 dists: [ precise, raring ]

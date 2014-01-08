@@ -14,7 +14,8 @@
   hosts: slaves
   sudo: yes
   tasks:
-    - copy: src=sudoers-buildbot dest=/etc/sudoers.d owner=0 group=0 mode=0440
+    - copy: "content='buildbot  ALL= NOPASSWD: SETENV: /usr/bin/git-*, /usr/sbin/*builder\n'
+            dest=/etc/sudoers.d/buildbot owner=0 group=0 mode=0440"
     - apt: name={{ item }} state=latest
       with_items:
         - reprepro

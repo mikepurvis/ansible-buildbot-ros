@@ -62,6 +62,7 @@
       with_items:
         - rosdistro
         - buildbot
+        - requests
     - copy: src=buildmaster/ dest={{ master_dir }}
     - command: "{{ venv }}/bin/venv_exec buildbot create-master {{ master_dir }}
                  creates={{ master_dir }}/buildbot.tac"

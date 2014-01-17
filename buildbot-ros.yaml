@@ -10,12 +10,14 @@
         - python-virtualenv
         - git
 
-- name: extra preparation for buildbot slave
+- name: buildbot slave setup
   hosts: slaves
   sudo: yes
+  sudo_user: buildbot
   tasks:
     - copy: "content='buildbot  ALL= NOPASSWD: SETENV: /usr/bin/git-*, /usr/sbin/*builder\n'
             dest=/etc/sudoers.d/buildbot owner=0 group=0 mode=0440"
+      sudo_user: root
     - apt: name={{ item }} state=latest
       with_items:
         - reprepro
@@ -24,12 +26,8 @@
         - devscripts
         - git-buildpackage
         - debhelper
+      sudo_user: root
 
-- name: buildbot slave setup
-  hosts: slaves
-  sudo: yes
-  sudo_user: buildbot
-  tasks:
     - pip: name={{ item }} virtualenv={{ venv }}
       with_items:
         - buildbot-slave

@@ -182,16 +182,6 @@ pbuilder/cowbuilder without a password, by adding the following to your /etc/sud
 Note that there is a TAB between buildbot and ALL.
 
 ##Known Issues, Hacks, Tricks and Workarounds
-###ansible setup
-Mike Purvis has created a deployment setup using ansible: https://github.com/mikepurvis/ansible-buildbot-ros/
-
-###easy_install version of sqlalchemy causes buildbot scripts to fail
-This is an incompatibility between version 0.7.x of sqlalchemy-migrate and 0.8 of sqlalchemy. The
-quick fix is to edit a file in your virtualenv. In
-/home/buildbot/buildbot-env/lib/python2.7/site-packages/sqlalchemy_migrate-0.*/migrate/versioning/schema.py
-at line 10. change 'exceptions' to 'exc':
-
-    from sqlalchemy import exc as sa_exceptions
 
 ###I need to move my gpg key (also known as 'my server has all the entropy of a dead cow!')
 On the machine with the key
@@ -208,3 +198,9 @@ On the other machine:
 This will prevent you from loading the entire ROS farm as is, unless different arch/code-name combinations
 are restricted to different buildbots. There is a monkey-patch available here:
 http://trac.buildbot.net/ticket/2045
+
+###ansible setup
+Mike Purvis has created a deployment setup using ansible: https://github.com/mikepurvis/ansible-buildbot-ros/
+
+###private repositories and dependencies
+See https://github.com/mikeferguson/buildbot-ros/blob/master/docs/private_repositories.md

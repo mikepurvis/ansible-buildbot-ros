@@ -9,7 +9,7 @@ import subprocess
 
 # A bit hacky, but do this rather than redefine the function.
 # Has to be in testbuild, as we only copy testbuild to pbuilder.
-from testbuild import call
+from build_helpers import call
 
 ## @brief Returns the basepath of the cowbuilder
 ## @param distro The UBUNTU distribution (for instance, 'precise')

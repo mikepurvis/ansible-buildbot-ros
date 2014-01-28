@@ -34,6 +34,7 @@
     - copy: src=scripts/{{ item }} dest={{ venv }}/bin/{{ item }} mode=755
       with_items:
         - cowbuilder-update.py
+        - build_helpers.py
     - template: src=scripts/{{ item }}.j2 dest={{ venv }}/bin/{{ item }} mode=755
       with_items:
         - venv_exec

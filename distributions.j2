@@ -5,5 +5,8 @@ Codename: {{ dist }}
 Architectures: {{ ' '.join(arches) }}
 Components: main
 Description: {{ org }} Debian Repository
+{% if signwith_key %}
+SignWith: {{ signwith_key }}
+{% endif %}
 
 {% endfor %}

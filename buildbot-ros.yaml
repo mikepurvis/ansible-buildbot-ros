@@ -31,15 +31,14 @@
     - pip: name={{ item }} virtualenv={{ venv }}
       with_items:
         - buildbot-slave
+    - copy: src=scripts/{{ item }} dest={{ venv }}/bin/{{ item }} mode=755
+      with_items:
+        - cowbuilder-update.py
+        - build_helpers.py
     - template: src=scripts/{{ item }}.j2 dest={{ venv }}/bin/{{ item }} mode=755
       with_items:
         - venv_exec
         - reprepro-include.bash 
-    - copy: src=scripts/{{ item }} dest={{ venv }}/bin/{{ item }} mode=755
-      with_items:
-        - cowbuilder-update.py
-        - docbuild.py
-        - testbuild.py
     - command: "{{ venv }}/bin/venv_exec buildslave
                   create-slave {{ home }}/{{ item }}
                                {{ groups['master'][0] }}:9989
@@ -66,7 +65,7 @@
     - copy: src=buildmaster/ dest={{ master_dir }}
     - command: "{{ venv }}/bin/venv_exec buildbot create-master {{ master_dir }}
                  creates={{ master_dir }}/buildbot.tac"
-    - lineinfile: dest={{ master_dir }}/buildbot.tac regexp=^umask line="umask = 0023"
+    - lineinfile: "dest={{ master_dir }}/buildbot.tac regexp='^umask' line='umask = 0022'"
     - file: name={{ building_repo }} state=directory mode=755
     - file: name={{ building_repo }}/ubuntu/conf state=directory
     - template: src=distributions.j2 dest={{ home }}/building/ubuntu/conf/distributions

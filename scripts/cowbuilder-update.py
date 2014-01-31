@@ -10,7 +10,7 @@ import time
 
 # A bit hacky, but do this rather than redefine the function.
 # Has to be in testbuild, as we only copy testbuild to pbuilder.
-from testbuild import call
+from build_helpers import call
 
 import random
 file_num = random.randrange(100000)
